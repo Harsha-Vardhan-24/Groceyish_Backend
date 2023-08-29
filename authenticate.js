@@ -26,17 +26,28 @@ mongoose.model("User", userSchema);
 const User = mongoose.model("User");
 
 router.get("/", async (req, res) => {
-  const newUser = new User({
-    email: "h@h.com",
-    password: "randomData",
-  });
+  // const newUser = new User({
+  //   email: "h@h.com",
+  //   password: "randomData",
+  // });
+  // try {
+  //   await newUser.save();
+  //   console.log("User saved");
+  // } catch (error) {
+  //   console.error(error);
+  // }
+  res.send(`This is the authentication page`);
+});
+
+router.post("/", async (req, res) => {
   try {
-    await newUser.save();
-    console.log("User saved");
+    const values = req.body;
+    console.log(values);
+    res.json({ message: "User authentication successful" });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: "error" });
   }
-  res.send(`This is the authentication page`);
 });
 
 module.exports = router;
