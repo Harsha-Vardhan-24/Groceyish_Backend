@@ -38,7 +38,11 @@ router.post("/", async (req, res) => {
       if (userExsists) {
         const userPass = await User.findOne({ password: values.password });
         if (userPass) {
-          return res.json({ message: "Correct Password" });
+          const user = await User.findOne({ email: values.email });
+          return res.json({
+            message: "Correct Password",
+            username: user.username,
+          });
         } else {
           return res.json({ message: "Wrong Password" });
         }
@@ -48,6 +52,7 @@ router.post("/", async (req, res) => {
     } else {
       const newUser = new User({
         email: values.email,
+        username: values.username,
         password: values.password,
       });
       newUser
