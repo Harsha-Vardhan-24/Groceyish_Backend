@@ -18,6 +18,7 @@ mongoose
 
 const userSchema = mongoose.Schema({
   email: { type: String, required: true },
+  username: { type: String, unique: true },
   password: { type: String, required: true },
 });
 
@@ -26,24 +27,39 @@ mongoose.model("User", userSchema);
 const User = mongoose.model("User");
 
 router.get("/", async (req, res) => {
-  // const newUser = new User({
-  //   email: "h@h.com",
-  //   password: "randomData",
-  // });
-  // try {
-  //   await newUser.save();
-  //   console.log("User saved");
-  // } catch (error) {
-  //   console.error(error);
-  // }
   res.send(`This is the authentication page`);
 });
 
 router.post("/", async (req, res) => {
   try {
     const values = req.body;
-    console.log(values);
-    res.json({ message: "User authentication successful" });
+    if (values.username === "") {
+      const userExsists = await User.findOne({ email: values.email });
+      if (userExsists) {
+        const userPass = await User.findOne({ password: values.password });
+        if (userPass) {
+          return res.json({ message: "Correct Password" });
+        } else {
+          return res.json({ message: "Wrong Password" });
+        }
+      } else {
+        return res.json({ message: "User not found" });
+      }
+    } else {
+      const newUser = new User({
+        email: values.email,
+        password: values.password,
+      });
+      newUser
+        .save()
+        .then((savedUser) => {
+          console.log("User saved successfully: ", savedUser);
+        })
+        .catch((error) => {
+          console.error("Error saving user: ", error);
+        });
+      return res.json({ message: "User auth success" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "error" });
