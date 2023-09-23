@@ -23,6 +23,8 @@ const userSchema = mongoose.Schema({
   username: { type: String, unique: true },
   password: { type: String, required: true },
   admin: { type: Boolean, required: true },
+  cart: { type: Array, required: true },
+  favourites: { type: Array, required: true },
 });
 
 userDB.model("User", userSchema);
@@ -46,12 +48,14 @@ router.post("/", async (req, res) => {
             return res.json({
               message: "Correct Password",
               username: user.username,
+              email: user.email,
               admin: true,
             });
           } else {
             return res.json({
               message: "Correct Password",
               username: user.username,
+              email: user.email,
             });
           }
         } else {
@@ -66,6 +70,8 @@ router.post("/", async (req, res) => {
         username: values.username,
         password: values.password,
         admin: false,
+        cart: [],
+        favourites: []
       });
       newUser
         .save()

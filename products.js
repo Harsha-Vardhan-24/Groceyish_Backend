@@ -5,6 +5,8 @@ require("dotenv").config();
 
 const { productsDB } = require("./db");
 
+const { userDB } = require("./db");
+
 const productSchema = mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String, required: true },
@@ -17,6 +19,8 @@ const productSchema = mongoose.Schema({
 productsDB.model("Product", productSchema);
 
 const Product = productsDB.model("Product");
+
+const User = userDB.model("User");
 
 router.get("/", (req, res) => {
   res.send("This is products page");
@@ -53,8 +57,38 @@ router.get("/getproducts", async (req, res) => {
   const bestSelling = await Product.find({ bestSelling: true })
     .sort({ createdAt: -1 })
     .limit(4);
-    
+
   res.json({ featuredProducts, bestSelling });
+});
+
+router.post("/getcartdata", async (req, res) => {
+  const { cartItems, email } = req.body;
+  const productsData = [];
+
+  // console.log(cartItems);
+
+  const returnUser = await User.findOne({ email: email });
+  const cartData = returnUser.cart[0];
+  returnUser.cart.splice(1);
+
+  if (cartItems.length !== 0) {
+    returnUser.cart.unshift(cartItems);
+    try {
+      returnUser.save();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  console.log(returnUser.cart);
+
+  await Promise.all(
+    cartData.map(async (item) => {
+      const findProduct = await Product.findOne({ _id: item });
+      productsData.push(findProduct);
+    })
+  );
+  res.json({ cart: productsData });
 });
 
 module.exports = router;
