@@ -9,6 +9,8 @@ app.use(express.json());
 const authentication = require("./authenticate");
 const products = require("./products");
 
+const payment = require("./payment");
+
 const PORT = process.env.PORT || 5000;
 
 // Building MongoConnection
@@ -20,6 +22,8 @@ app.get("/", (req, res) => {
 app.use("/authenticate", authentication);
 
 app.use("/products", products);
+
+app.use("/payment", payment);
 
 app.listen(PORT, (err) => {
   if (err) {

@@ -80,8 +80,6 @@ router.post("/getcartdata", async (req, res) => {
     }
   }
 
-  console.log(returnUser.cart);
-
   await Promise.all(
     cartData.map(async (item) => {
       const findProduct = await Product.findOne({ _id: item });
