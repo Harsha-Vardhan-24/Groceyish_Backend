@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
 router.post("/create-payment", async (req, res) => {
   try {
     const order = await razorpay.orders.create({
-      amount: req.body.totalPrice,
+      amount: req.body.totalPrice * 100,
       currency: "INR",
     });
     res.json({ order });
